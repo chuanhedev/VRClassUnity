@@ -36,7 +36,7 @@ namespace chuanhe
         float dis = (lastVector - v3).magnitude;
         if (dis > updateLimit)
         {
-          // SocketController.instant.EmitVector("MOVE", v3);
+          SocketController.instant.EmitVector("MOVE", v3);
           lastVector = v3;
         }
       }

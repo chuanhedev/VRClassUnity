@@ -32,6 +32,11 @@ namespace chuanhe
 
     void Start()
     {
+      
+    }
+
+    public void Init(){
+      socket.gameObject.SetActive(true);
       socket.On("connect", OnConnect);
       socket.On("close", OnClose);
       socket.On("open", OnOpen);

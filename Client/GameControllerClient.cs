@@ -28,6 +28,12 @@ namespace chuanhe
       instant = this;
     }
 
+    void Start(){
+      client.OnReadyHandler = ()=>{
+        this.socket.Init();
+      };
+    }
+
     public void ChangeScene(string name)
     {
       if (sceneName == name) return;

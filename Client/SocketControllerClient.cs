@@ -11,16 +11,20 @@ public class SocketControllerClient : MonoBehaviour
   // Use this for initialization
   private float connectionChecker = 0.0f;
 
-	private GameControllerClient game;
+  private GameControllerClient game;
 
   void Start()
   {
-		game = GameControllerClient.instant;
+    game = GameControllerClient.instant;
     socket = SocketController.instant;
+    socket.OnConnectHandler = ConnectToServer;
+  }
+
+  public void Init()
+  {
     socket.On("JOIN", OnUserJoin);
     socket.On("SCENE", OnScene);
     socket.On("CHECK", OnCheck);
-		socket.OnConnectHandler = ConnectToServer;
   }
 
   private void ConnectToServer(SocketIOEvent evt = null)

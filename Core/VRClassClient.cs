@@ -45,10 +45,11 @@ namespace chuanhe
 
     void Start()
     {
+      socket = SocketController.instant;
       updater.OnReadyHandler = () =>
       {
         socket.socket.url = "ws://" + url + "/socket.io/?EIO=4&transport=websocket";
-        socket.gameObject.SetActive(true);
+        socket.Init();
         if (OnReadyHandler != null)
           OnReadyHandler();
       };

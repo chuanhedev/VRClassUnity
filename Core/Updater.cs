@@ -16,6 +16,8 @@ namespace chuanhe
     // Use this for initialization
     public IEnumerator Init(string ip = "")
     {
+      if (config == null)
+        yield return GetConfig();
       if (ip != "")
         socketIP = ip;
       yield return checkUpdate();
@@ -23,11 +25,14 @@ namespace chuanhe
 
     public IEnumerator GetConfig()
     {
+      Debug.Log("GetConfig");
       yield return Request.ReadPersistent("config.json", str =>
       {
+        Debugger.Log(Color.blue, "GetConfig done");
         config = new JSONObject(str);
       }, () =>
       {
+        Debugger.Log(Color.blue, "GetConfig fail");
         config = new JSONObject();
       });
     }
@@ -40,7 +45,7 @@ namespace chuanhe
       }
       set
       {
-        config["version"] = new JSONObject(value);
+        config["version"] = JSONObject.CreateStringObject(value);
       }
     }
 
@@ -52,7 +57,7 @@ namespace chuanhe
       }
       set
       {
-        config["ip"] = new JSONObject(value);
+        config["ip"] = JSONObject.CreateStringObject(value);
       }
     }
 
@@ -80,7 +85,7 @@ namespace chuanhe
       StreamWriter writer = new StreamWriter(path, false);
       // Dictionary<string, string> config = new Dictionary<string, string>();
       // config.Add("version", version);
-      writer.Write(new JSONObject(config).ToString());
+      writer.Write(config.ToString());
       writer.Close();
     }
 
@@ -96,11 +101,17 @@ namespace chuanhe
         yield return Request.DownloadFile("resources/" + fileName, "resources/" + fileName);
       }
       Request.RemoteUrl = tempurl;
-      Debugger.Log(Color.blue, "updateFiles done");
+      OnUpdateComplete();
+    }
+
+    private void OnUpdateComplete()
+    {
+      Debugger.Log(Color.blue, "OnUpdateComplete");
       SaveConfigFile();
       if (OnReadyHandler != null)
         OnReadyHandler();
     }
+
     IEnumerator checkUpdate()
     {
       Dictionary<string, string> param = new Dictionary<string, string>();
@@ -117,6 +128,8 @@ namespace chuanhe
           version = serverVersion;
           StartCoroutine(updateFiles(obj["files"].list));
         }
+        else
+          OnUpdateComplete();
       });
     }
 
