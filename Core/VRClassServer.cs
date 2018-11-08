@@ -10,7 +10,7 @@ namespace chuanhe
   {
     Production, Development
   }
-  public class VRClass : MonoBehaviour
+  public class VRClassServer : MonoBehaviour
   {
 
     // Use this for initialization
