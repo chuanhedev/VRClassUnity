@@ -146,33 +146,21 @@ namespace chuanhe
     }
 
 
-    public static IEnumerator Post(string src, string value = "", Action<string> callback = null)
+    public static IEnumerator Post(string src, string value = "", Action<string> callback = null, Action failedCallback = null)
     {
       WWWForm form = new WWWForm();
       form.AddField("data", value);
       yield return post(GetRemoteAPI(src), form, callback);
     }
 
-    public static IEnumerator Post(string src, JSONObject json, Action<string> callback = null)
+    public static IEnumerator Post(string src, JSONObject json, Action<string> callback = null, Action failedCallback = null)
     {
       WWWForm form = new WWWForm();
       form.AddField("data", json.ToString());
       yield return post(GetRemoteAPI(src), form, callback);
-      // using (UnityWebRequest www = UnityWebRequest.Post(GetRemoteAPI(src), form))
-      // {
-      //   yield return www.SendWebRequest();
-      //   if (www.isNetworkError || www.isHttpError)
-      //   {
-      //     Debug.Log("post error " +www.error);
-      //   }
-      //   else
-      //   {
-      //     Debug.Log("post " + www.downloadHandler.text);
-      //   }
-      // }
     }
 
-    public static IEnumerator post(string src, WWWForm form, Action<string> callback = null)
+    public static IEnumerator post(string src, WWWForm form, Action<string> callback = null, Action failedCallback = null)
     {
       Debug.Log("posting " + src);
       using (UnityWebRequest www = UnityWebRequest.Post(src, form))
@@ -181,6 +169,8 @@ namespace chuanhe
         if (www.isNetworkError || www.isHttpError)
         {
           Debug.Log("post error " + src + " " + www.error);
+          if (failedCallback != null)
+            failedCallback();
         }
         else
         {

@@ -14,6 +14,12 @@ namespace chuanhe
       //		GameManager.instant.message.text += str + "\n";
     }
 
+    public static void Display(string str)
+    {
+      // VRClass.instant.message.text += str + "\n";
+      Debug.Log("dissplay:" + str);
+    }
+
     public static void Log(Color color, string str)
     {
       Debug.Log(string.Format("<color=#{0:X2}{1:X2}{2:X2}>{3}</color>", (byte)(color.r * 255f), (byte)(color.g * 255f), (byte)(color.b * 255f), str));

@@ -84,6 +84,12 @@ namespace chuanhe
       socket.On(eventName, callback);
     }
 
+    public void Emit(string eventName)
+    {
+      if (!started) return;
+      this.socket.Emit(eventName);
+    }
+
     public void Emit(string eventName, string str)
     {
       if (!started) return;
@@ -98,5 +104,11 @@ namespace chuanhe
       if (!started) return;
       this.socket.Emit(eventName, obj);
     }
+
+    public void EmitVector(string eventName, Vector3 v3)
+    {
+      this.Emit(eventName, v3.x + "," + v3.y + "," + v3.z);
+    }
+
   }
 }
