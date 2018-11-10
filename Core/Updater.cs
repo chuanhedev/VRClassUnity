@@ -94,11 +94,14 @@ namespace chuanhe
       Debugger.Log("updateFiles");
       string tempurl = Request.RemoteUrl;
       // Request.RemoteUrl = "http://" + SocketController.instant.url;
-      Request.RemoteUrl = url;
+      Request.RemoteUrl = "http://" + url;
       for (int i = 0; i < files.Count; i++)
       {
         string fileName = files[i]["name"].str;
-        yield return Request.DownloadFile("resources/" + fileName, "resources/" + fileName);
+        string pathName = files[i]["path"].str;
+        Debugger.Log(pathName + fileName);
+        string fullPath = Path.Combine(Path.Combine("resources/", pathName), fileName);
+        yield return Request.DownloadFile(fullPath, fullPath);
       }
       Request.RemoteUrl = tempurl;
       OnUpdateComplete();
@@ -121,7 +124,8 @@ namespace chuanhe
         Debugger.Log(Color.green, str);
         JSONObject obj = new JSONObject(str);
         string serverVersion = obj["version"].str;
-        Debugger.Log(serverVersion);
+        Debugger.Log("serverVersion: " + serverVersion);
+        Debugger.Log("localVersion: " + version);
         if (serverVersion != version)
         {
           //update game
@@ -130,6 +134,9 @@ namespace chuanhe
         }
         else
           OnUpdateComplete();
+      }, str =>
+      {
+        OnUpdateComplete();
       });
     }
 

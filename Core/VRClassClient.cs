@@ -66,9 +66,11 @@ namespace chuanhe
       {
         if (str != "")
         {
+          Debugger.Log(Color.blue, str);
           url = str + ":" + port;
           // if (OnReadyHandler != null)
           //   OnReadyHandler(str);
+          updater.url = url;
           StartCoroutine(updater.Init(str));
         }
         else
@@ -83,8 +85,10 @@ namespace chuanhe
 
     IEnumerator OnGetIPError()
     {
+      Debugger.Log(Color.red, "OnGetIPError");
       yield return updater.GetConfig();
       url = updater.socketIP + ":" + port;
+      updater.url = url;
       if (updater.socketIP == "")
       {
         Debug.LogError("Socket IP cannot be empty");

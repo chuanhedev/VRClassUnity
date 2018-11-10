@@ -125,7 +125,7 @@ namespace chuanhe
     }
 
 
-    public static IEnumerator Get(string src, Dictionary<string, string> data = null, Action<string> callback = null, bool strict = false)
+    public static IEnumerator Get(string src, Dictionary<string, string> data = null, Action<string> callback = null, Action<string> failedCallback = null, bool strict = false)
     {
       src = strict ? src : RemoteUrl + "/" + src + ".php";
       if (data != null && data.Keys.Count > 0)
@@ -140,9 +140,18 @@ namespace chuanhe
       Debugger.Log(src);
       WWW www = new WWW(src);
       yield return www;
-      if (callback != null)
-        callback(www.text);
-      Debugger.Log("get " + www.text);
+      if (www.error != null && www.error != "")
+      {
+        Debugger.Log("get failed " + www.error);
+        if (failedCallback != null)
+          failedCallback(www.error);
+      }
+      else
+      {
+        Debugger.Log("get " + www.text);
+        if (callback != null)
+          callback(www.text);
+      }
     }
 
 
@@ -150,14 +159,14 @@ namespace chuanhe
     {
       WWWForm form = new WWWForm();
       form.AddField("data", value);
-      yield return post(GetRemoteAPI(src), form, callback);
+      yield return post(GetRemoteAPI(src), form, callback, failedCallback);
     }
 
     public static IEnumerator Post(string src, JSONObject json, Action<string> callback = null, Action failedCallback = null)
     {
       WWWForm form = new WWWForm();
       form.AddField("data", json.ToString());
-      yield return post(GetRemoteAPI(src), form, callback);
+      yield return post(GetRemoteAPI(src), form, callback, failedCallback);
     }
 
     public static IEnumerator post(string src, WWWForm form, Action<string> callback = null, Action failedCallback = null)
@@ -197,15 +206,25 @@ namespace chuanhe
       dest = absolute ? dest : Path.Combine(UnityEngine.Application.persistentDataPath, dest);
       if (!Directory.Exists(Path.GetDirectoryName(dest)))
         Directory.CreateDirectory(Path.GetDirectoryName(dest));
-      try
+      if (www.error == null || www.error == "")
       {
-        File.WriteAllBytes(dest, www.bytes);
+        try
+        {
+          File.WriteAllBytes(dest, www.bytes);
+          Debugger.Log("Downloaded " + src + " to " + dest);
+        }
+        catch (Exception ex)
+        {
+          Debugger.Log(Color.red, "Downloaded " + src + " to " + dest + " with error ");
+          Debugger.Log(Color.red, ex.ToString());
+        }
       }
-      catch
+      else
       {
+        Debugger.Log(Color.red, "Failed to download " + src + " to " + dest + " with error ");
+        Debugger.Log(Color.red, www.error);
+      }
 
-      }
-      Debugger.Log("Downloaded " + src + " to " + dest);
     }
 
     public static void Cancel()
