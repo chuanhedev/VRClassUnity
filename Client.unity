@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &367804284
 RectTransform:
   m_ObjectHideFlags: 0
@@ -314,7 +314,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 300}
+  m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &647258246
 MonoBehaviour:
@@ -381,8 +381,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -87}
-  m_SizeDelta: {x: 391, y: 395.9}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &649050788
 MonoBehaviour:
@@ -410,7 +410,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 1
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -634,8 +634,7 @@ MonoBehaviour:
   prodRemoteUrl: http://132.232.37.157/vrclass
   devRemoteUrl: http://192.168.1.2/vrclass
   updater: {fileID: 933142211}
-  port: 14332
-  url: 
+  socketPort: 14332
 --- !u!4 &933142209
 Transform:
   m_ObjectHideFlags: 0
@@ -674,7 +673,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c2435aedcf2ff24684e29ac01861a3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: 
+  appVersionNumber: 1.0.0
+  serverVersion: 
 --- !u!1001 &941514694
 Prefab:
   m_ObjectHideFlags: 0
@@ -986,6 +986,7 @@ MonoBehaviour:
   sphere: {fileID: 752486811}
   client: {fileID: 933142208}
   socket: {fileID: 1900725530}
+  cameraTracker: {fileID: 1900725529}
 --- !u!114 &1900725529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -998,7 +999,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetTransform: {fileID: 354345177}
-  property: 0
   updateFrequency: 5
   updateLimit: 0.01
 --- !u!114 &1900725530

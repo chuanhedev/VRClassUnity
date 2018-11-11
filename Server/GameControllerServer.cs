@@ -91,7 +91,7 @@ namespace chuanhe
           sceneName = name;
           OnSceneEnter();
           Dictionary<string, string> data = new Dictionary<string, string>();
-          data["path"] = name;
+          data["name"] = name;
           socket.EmitEvent("SCENE", new JSONObject(data));
         }));
       }

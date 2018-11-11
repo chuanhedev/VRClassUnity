@@ -10,95 +10,31 @@ namespace chuanhe
   public class Updater : MonoBehaviour
   {
     // private string version;
-    [HideInInspector]
-    public string url;
-    private JSONObject config;
+    private string socketUrl;
+    private string localVersionNumber;
+    // private JSONObject config;
     public Action OnReadyHandler;
 
     public OnFileDownloadingDelegate OnFileDownloading;
-    public Action OnFileDownloaded;
+    // public Action OnFileDownloaded;
+
+    public Action<string> OnApkUpdate;
+    public string appVersionNumber;
+
+    [HideInInspector]
+    public string serverVersion;
     // Use this for initialization
-    public IEnumerator Init(string ip = "")
+    public IEnumerator Init(string ip, string v)
     {
-      if (config == null)
-        yield return GetConfig();
-      if (ip != "")
-        socketIP = ip;
+      socketUrl = ip;
+      localVersionNumber = v;
       yield return checkUpdate();
     }
-
-    public IEnumerator GetConfig()
-    {
-      Debug.Log("GetConfig");
-      yield return Request.ReadPersistent("config.json", str =>
-      {
-        Debugger.Log(Color.blue, "GetConfig done");
-        config = new JSONObject(str);
-      }, () =>
-      {
-        Debugger.Log(Color.blue, "GetConfig fail");
-        config = new JSONObject();
-      });
-    }
-
-    public string version
-    {
-      get
-      {
-        return config.HasField("version") ? config["version"].str : "";
-      }
-      set
-      {
-        config["version"] = JSONObject.CreateStringObject(value);
-      }
-    }
-
-    public string socketIP
-    {
-      get
-      {
-        return config.HasField("ip") ? config["ip"].str : "";
-      }
-      set
-      {
-        config["ip"] = JSONObject.CreateStringObject(value);
-      }
-    }
-
-    // IEnumerator readConfig()
-    // {
-    //   yield return Request.ReadPersistent("config.json", str =>
-    //   {
-    //     Debugger.Log("Succcess to load");
-    //     JSONObject config = new JSONObject(str);
-    //     version = config["version"].str;
-    //     StartCoroutine(checkUpdate());
-    //   }, () =>
-    //   {
-    //     Debugger.Log("failed to load");
-    //     version = "1.0.0";
-    //     SaveVersionFile();
-    //     StartCoroutine(checkUpdate());
-    //   });
-    // }
-
-    private void SaveConfigFile()
-    {
-      string path = UnityEngine.Application.persistentDataPath + "/" + "config.json";
-      Debugger.Log(path);
-      StreamWriter writer = new StreamWriter(path, false);
-      // Dictionary<string, string> config = new Dictionary<string, string>();
-      // config.Add("version", version);
-      writer.Write(config.ToString());
-      writer.Close();
-    }
-
     IEnumerator updateFiles(List<JSONObject> files)
     {
       Debugger.Log("updateFiles");
       string tempurl = Request.RemoteUrl;
-      // Request.RemoteUrl = "http://" + SocketController.instant.url;
-      Request.RemoteUrl = "http://" + url;
+      Request.RemoteUrl = socketUrl;
       for (int i = 0; i < files.Count; i++)
       {
         string fileName = files[i]["name"].str;
@@ -126,29 +62,33 @@ namespace chuanhe
     IEnumerator checkUpdate()
     {
       Dictionary<string, string> param = new Dictionary<string, string>();
-      param.Add("version", version);
+      param.Add("app_version", appVersionNumber);
+      param.Add("version", localVersionNumber);
       yield return Request.Get("version", param, (str) =>
       {
         Debugger.Log(Color.green, str);
         JSONObject obj = new JSONObject(str);
-        string serverVersion = obj["version"].str;
-        bool update = obj["update_student"].str != "0";
-        Debugger.Log("serverVersion: " + serverVersion);
-        Debugger.Log("localVersion: " + version);
-
-        if (update)
+        serverVersion = obj["version"].str;
+        bool update = obj["update"].str != "0";
+        bool updateApk = obj.HasField("update_student_client");
+        if (updateApk)
         {
-          Application.OpenURL("http://" + url + "/resources/client.apk");
+          Debugger.Log(Color.red, "update apk " + obj["update_student_client"].str);
+          // Application.OpenURL("http://" + url + "/resources/client.apk");
+          if (OnApkUpdate != null)
+          {
+            OnApkUpdate(obj["update_student_client"].str);
+          }
           return;
         }
-        if (serverVersion != version)
+        if (update)
         {
-          //update game
-          version = serverVersion;
           StartCoroutine(updateFiles(obj["files"].list));
         }
         else
+        {
           OnUpdateComplete();
+        }
       }, str =>
       {
         OnUpdateComplete();

@@ -11,11 +11,11 @@ public class SocketControllerClient : MonoBehaviour
   // Use this for initialization
   private float connectionChecker = 0.0f;
 
-  private GameControllerClient game;
+  private GameControllerClient gameController;
 
   void Start()
   {
-    game = GameControllerClient.instant;
+    gameController = GameControllerClient.instant;
     socket = SocketController.instant;
     socket.OnConnectHandler = ConnectToServer;
   }
@@ -25,7 +25,7 @@ public class SocketControllerClient : MonoBehaviour
     socket.On("JOIN", OnUserJoin);
     socket.On("CHECK", OnCheck);
     socket.OnEvent("SCENE", OnScene);
-    game.cameraTracker.OnForwardUpdateHandler = (v3) =>
+    gameController.cameraTracker.OnForwardUpdateHandler = (v3) =>
     {
       JSONObject obj = new JSONObject();
       obj["id"] = JSONObject.CreateStringObject(SystemInfo.deviceUniqueIdentifier);
@@ -47,7 +47,7 @@ public class SocketControllerClient : MonoBehaviour
   private void OnUserJoin(SocketIOEvent evt)
   {
     Debug.Log("message from server OnUserJoin" + evt.data);
-    game.ChangeScene(evt.data["scene"].str);
+    gameController.ChangeScene(evt.data["scene"].str);
   }
 
   private void OnCheck(SocketIOEvent evt)
@@ -57,7 +57,7 @@ public class SocketControllerClient : MonoBehaviour
 
   private void OnScene(JSONObject obj)
   {
-    game.ChangeScene(obj["name"].str);
+    gameController.ChangeScene(obj["name"].str);
   }
 
   void Update()

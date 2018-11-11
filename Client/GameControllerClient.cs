@@ -17,7 +17,7 @@ namespace chuanhe
 
     public GameObject sphere;
 
-    private string sceneName = "1";
+    private string sceneName = "";
 
     public VRClassClient client;
 
@@ -42,14 +42,11 @@ namespace chuanhe
 
     public void ChangeScene(string name)
     {
+      // ChangeScene(obj["scene"].str);
+      Debugger.Log(Color.blue, "ChangeScene " + sceneName + " to " + name);
       if (sceneName == name) return;
       sceneName = name;
       StartCoroutine(LoadScene(name));
-    }
-
-    public void UpdateScene(JSONObject obj)
-    {
-      ChangeScene(obj["scene"].str);
     }
 
     IEnumerator LoadScene(string name)
