@@ -21,6 +21,8 @@ namespace chuanhe
     [Header("Development")]
     public string devRemoteUrl = "http://localhost/chuanhe";
 
+    public string socketUrl;
+
     // public Tracker tracker;
 
     void Awake()

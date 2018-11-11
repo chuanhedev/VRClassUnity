@@ -308,7 +308,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: scene1
+  m_Text: v1/1
 --- !u!1 &624689767
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +448,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &678823882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -508,7 +508,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: scene1
+  m_Text: v1/1
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -529,7 +529,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -369, y: 177}
+  m_AnchoredPosition: {x: -369, y: 38}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &678823884
@@ -680,9 +680,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bebc09870fb5c604e9abd017c549a63f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  environment: 0
+  environment: 1
   prodRemoteUrl: http://132.232.37.157/vrclass
   devRemoteUrl: http://localhost/vrclass
+  socketUrl: http://localhost:14332
 --- !u!4 &806950238
 Transform:
   m_ObjectHideFlags: 0
@@ -1221,7 +1222,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 4
+  m_Text: Change Scene
 --- !u!222 &1589089135
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1310,7 +1311,7 @@ Transform:
   m_LocalScale: {x: 10, y: 10, z: -10}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1734199889
 GameObject:
@@ -1521,6 +1522,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1900725527}
+  - component: {fileID: 1900725529}
   - component: {fileID: 1900725528}
   m_Layer: 0
   m_Name: GameController
@@ -1540,7 +1542,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1900725528
 MonoBehaviour:
@@ -1550,7 +1552,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1900725526}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0546f12c6773684e95c9e8124caa273, type: 3}
+  m_Script: {fileID: 11500000, guid: aa8ed183a8fd1f8429f45016ac472642, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   message: {fileID: 0}
@@ -1560,10 +1562,21 @@ MonoBehaviour:
   focusClient: {fileID: 0}
   school: 
   deviceName: 
-  sceneName: 1
   clientPrefab: {fileID: 1130057976778202, guid: 281c0ea230c3a634eba4136ed410ddf3,
     type: 2}
   canvas: {fileID: 841436782}
+  server: {fileID: 806950237}
+--- !u!114 &1900725529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1900725526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4740deecdeb7f804687cffb71378a2aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1945698426
 GameObject:
   m_ObjectHideFlags: 0
@@ -1672,7 +1685,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -370, y: 80}
+  m_AnchoredPosition: {x: -370, y: -5}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2018815606
@@ -1715,11 +1728,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1900725528}
-        m_MethodName: ChangeScene
-        m_Mode: 2
+        m_MethodName: ChangeSceneByPath
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 2018815606}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.UI.Button, UnityEngine.UI
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

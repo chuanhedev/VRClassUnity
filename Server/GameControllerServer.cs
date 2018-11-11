@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Net;
 using System.Net.Sockets;
+using System;
 
 namespace chuanhe
 {
@@ -28,13 +29,15 @@ namespace chuanhe
 
 
     [HideInInspector]
-    public string sceneName = "1";
+    private string sceneName = "";
 
     private float sceneEnterTime;
     public GameObject clientPrefab;
     public Transform canvas;
 
     private SocketController socket;
+
+    public VRClassServer server;
 
     void Awake()
     {
@@ -45,14 +48,16 @@ namespace chuanhe
     void Start()
     {
       socket = SocketController.instant;
+      socket.Init();
       tracker = new Tracker();
       sceneEnterTime = Time.time;
       StartCoroutine(tracker.Event("GameStart"));
-      OnSceneEnter();
+      ChangeScene("1");
     }
 
     private void OnSceneEnter()
     {
+      Debugger.Log(Color.green, "OnSceneEnter " + sceneName);
       Dictionary<string, string> p1 = new Dictionary<string, string>();
       p1.Add("Name", sceneName);
       StartCoroutine(tracker.Event("SceneEnter", p1, null));
@@ -60,6 +65,8 @@ namespace chuanhe
 
     private void OnSceneExit()
     {
+      if (sceneName == "") return;
+      Debugger.Log(Color.green, "OnSceneExit " + sceneName);
       Dictionary<string, string> p1 = new Dictionary<string, string>();
       p1.Add("Name", sceneName);
       Dictionary<string, string> m1 = new Dictionary<string, string>();
@@ -73,27 +80,66 @@ namespace chuanhe
       OnSceneExit();
     }
 
-    public void ChangeScene(Button btn)
+    public void ChangeScene(string name)
     {
-      string name = btn.transform.GetComponentInChildren<Text>().text;
+      Debugger.Log(Color.blue, "ChangeScene " + name + (name != "") + (name != sceneName));
       if (name != "" && name != sceneName)
       {
-        OnSceneExit();
-        sceneName = name;
-        OnSceneEnter();
-        Dictionary<string, string> data = new Dictionary<string, string>();
-        data["name"] = name;
-        SocketController.instant.Emit("SCENE", new JSONObject(data));
-        StartCoroutine(GameControllerServer.instant.LoadScene(name));
+        StartCoroutine(GameControllerServer.instant.LoadScene(name, () =>
+        {
+          OnSceneExit();
+          sceneName = name;
+          OnSceneEnter();
+          Dictionary<string, string> data = new Dictionary<string, string>();
+          data["path"] = name;
+          socket.EmitEvent("SCENE", new JSONObject(data));
+        }));
       }
     }
 
-    public IEnumerator LoadScene(string name)
+    public void ChangeScene(Button btn)
     {
-      WWW www = new WWW(Request.GetPersistentPath("/resources/" + name + ".jpg"));
+      string name = btn.transform.GetComponentInChildren<Text>().text;
+      ChangeScene(name);
+      // if (name != "" && name != sceneName)
+      // {
+      //   OnSceneExit();
+      //   sceneName = name;
+      //   OnSceneEnter();
+      //   Dictionary<string, string> data = new Dictionary<string, string>();
+      //   data["name"] = name;
+      //   socket.EmitEvent("SCENE", new JSONObject(data));
+      //   StartCoroutine(GameControllerServer.instant.LoadScene(name));
+      // }
+    }
+
+    public void ChangeSceneByPath()
+    {
+      string name = input.text;
+      ChangeScene(name);
+      // if (name != "" && name != sceneName)
+      // {
+      //   StartCoroutine(GameControllerServer.instant.LoadScene(name, () =>
+      //   {
+      //     OnSceneExit();
+      //     sceneName = name;
+      //     OnSceneEnter();
+      //     Dictionary<string, string> data = new Dictionary<string, string>();
+      //     data["path"] = name;
+      //     socket.EmitEvent("SCENE", new JSONObject(data));
+      //   }));
+      // }
+    }
+
+    public IEnumerator LoadScene(string name, Action callback = null)
+    {
+      string url = server.socketUrl + "/resources/" + name + ".jpg";
+      Debugger.Log("Loading " + url);
+      WWW www = new WWW(url);
       yield return www;
       if (string.IsNullOrEmpty(www.error))
       {
+        Debugger.Log(Color.green, "Loaded " + url);
         Texture2D tex = www.texture;
         MeshRenderer mr = sphere.GetComponent<MeshRenderer>();
         Material material = mr.material;
@@ -101,7 +147,11 @@ namespace chuanhe
         material.SetTexture("_MainTex", tex);
         // material.SetColor("_Color", Color.red);
         //bg.sprite = Sprite.Create (tex, new Rect (0.0f, 0.0f, tex.width, tex.height), new Vector2 (0.5f, 0.5f));
+        if (callback != null)
+          callback();
       }
+      else
+        Debugger.Log(Color.red, "Failed to load " + url);
     }
 
     public void CreateClient(JSONObject obj)
