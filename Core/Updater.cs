@@ -6,6 +6,7 @@ using System;
 
 namespace chuanhe
 {
+  public delegate void OnFileDownloadingDelegate(int currentFile, int totalFile, string fileName, float progress);
   public class Updater : MonoBehaviour
   {
     // private string version;
@@ -13,6 +14,9 @@ namespace chuanhe
     public string url;
     private JSONObject config;
     public Action OnReadyHandler;
+
+    public OnFileDownloadingDelegate OnFileDownloading;
+    public Action OnFileDownloaded;
     // Use this for initialization
     public IEnumerator Init(string ip = "")
     {
@@ -101,7 +105,11 @@ namespace chuanhe
         string pathName = files[i]["path"].str;
         Debugger.Log(pathName + fileName);
         string fullPath = Path.Combine(Path.Combine("resources/", pathName), fileName);
-        yield return Request.DownloadFile(fullPath, fullPath);
+        yield return Request.DownloadFile(fullPath, fullPath, false, p =>
+        {
+          if (OnFileDownloading != null)
+            OnFileDownloading(i + 1, files.Count, fileName, p);
+        });
       }
       Request.RemoteUrl = tempurl;
       OnUpdateComplete();
@@ -110,7 +118,7 @@ namespace chuanhe
     private void OnUpdateComplete()
     {
       Debugger.Log(Color.blue, "OnUpdateComplete");
-      SaveConfigFile();
+      // SaveConfigFile();
       if (OnReadyHandler != null)
         OnReadyHandler();
     }
@@ -124,8 +132,15 @@ namespace chuanhe
         Debugger.Log(Color.green, str);
         JSONObject obj = new JSONObject(str);
         string serverVersion = obj["version"].str;
+        bool update = obj["update_student"].str != "0";
         Debugger.Log("serverVersion: " + serverVersion);
         Debugger.Log("localVersion: " + version);
+
+        if (update)
+        {
+          Application.OpenURL("http://" + url + "/resources/client.apk");
+          return;
+        }
         if (serverVersion != version)
         {
           //update game

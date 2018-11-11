@@ -30,7 +30,11 @@ namespace chuanhe
 
     void Start(){
       client.OnReadyHandler = ()=>{
+        message.text = "Done";
         this.socket.Init();
+      };
+      client.updater.OnFileDownloading = (fileIdx, fileTotal, fileName, progress)=>{
+        message.text = string.Format("Downloading {0}({1}/{2}) {3}%", fileName, fileIdx, fileTotal, progress);
       };
     }
 
