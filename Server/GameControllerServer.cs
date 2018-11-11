@@ -13,6 +13,8 @@ namespace chuanhe
     private Dictionary<string, Client> clients = new Dictionary<string, Client>();
     public Text message;
     public InputField input;
+    public InputField input2;
+    public InputField input3;
     public static GameControllerServer instant;
     public Transform mainCamera;
     public GameObject sphere;
@@ -80,6 +82,22 @@ namespace chuanhe
       OnSceneExit();
     }
 
+    public void OpenApk()
+    {
+      string url = input3.text;
+      Dictionary<string, string> data = new Dictionary<string, string>();
+      data["value"] = url;
+      socket.EmitEvent("APK", new JSONObject(data));
+    }
+
+    public void OpenUrl()
+    {
+      string url = input2.text;
+      Dictionary<string, string> data = new Dictionary<string, string>();
+      data["value"] = url;
+      socket.EmitEvent("URL", new JSONObject(data));
+    }
+
     public void ChangeScene(string name)
     {
       Debugger.Log(Color.blue, "ChangeScene " + name + (name != "") + (name != sceneName));
@@ -101,34 +119,12 @@ namespace chuanhe
     {
       string name = btn.transform.GetComponentInChildren<Text>().text;
       ChangeScene(name);
-      // if (name != "" && name != sceneName)
-      // {
-      //   OnSceneExit();
-      //   sceneName = name;
-      //   OnSceneEnter();
-      //   Dictionary<string, string> data = new Dictionary<string, string>();
-      //   data["name"] = name;
-      //   socket.EmitEvent("SCENE", new JSONObject(data));
-      //   StartCoroutine(GameControllerServer.instant.LoadScene(name));
-      // }
     }
 
     public void ChangeSceneByPath()
     {
       string name = input.text;
       ChangeScene(name);
-      // if (name != "" && name != sceneName)
-      // {
-      //   StartCoroutine(GameControllerServer.instant.LoadScene(name, () =>
-      //   {
-      //     OnSceneExit();
-      //     sceneName = name;
-      //     OnSceneEnter();
-      //     Dictionary<string, string> data = new Dictionary<string, string>();
-      //     data["path"] = name;
-      //     socket.EmitEvent("SCENE", new JSONObject(data));
-      //   }));
-      // }
     }
 
     public IEnumerator LoadScene(string name, Action callback = null)
