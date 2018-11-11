@@ -16,8 +16,8 @@ public class SocketControllerServer : MonoBehaviour
     socket = SocketController.instant;
     socket.On("JOIN", OnUserJoin);
     socket.On("LEAVE", OnUserLeave);
-    socket.On("MOVE", OnUserMove);
     socket.On("USERS", OnUsers);
+    socket.OnEvent("LOOKAT", OnUserLook);
 		socket.OnConnectHandler = ConnectToServer;
   }
 
@@ -55,12 +55,12 @@ public class SocketControllerServer : MonoBehaviour
     game.RemoveClient(evt.data);
   }
 
-  private void OnUserMove(SocketIOEvent evt)
+  private void OnUserLook(JSONObject obj)
   {
-    if (game.focusClient && evt.data["name"].str == game.focusClient.clientName)
+    if (game.focusClient && obj["id"].str == game.focusClient.clientName)
     {
-      Debug.Log("message from server OnUserMove" + evt.data);
-      string[] l = evt.data["position"].str.Split(',');
+      Debug.Log("message from server OnUserLook" + obj);
+      string[] l = obj["value"].str.Split(',');
       Vector3 newPos = new Vector3(float.Parse(l[0]), float.Parse(l[1]), float.Parse(l[2]));
       game.mainCamera.forward = newPos;
     }

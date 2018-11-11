@@ -25,14 +25,11 @@ namespace chuanhe
     [HideInInspector]
     public Action<SocketIOEvent> OnDisconnectHandler;
 
+    private Dictionary<string, Action<JSONObject>> eventHandlerMap = new Dictionary<string, Action<JSONObject>>();
+
     void Awake()
     {
       instant = this;
-    }
-
-    void Start()
-    {
-      
     }
 
     public void Init(){
@@ -42,6 +39,16 @@ namespace chuanhe
       socket.On("open", OnOpen);
       socket.On("disconnect", OnDisconnect);
       socket.On("error", OnError);
+      socket.On("E", OnEventHandler);
+    }
+
+    private void OnEventHandler(SocketIOEvent evt)
+    {
+      JSONObject obj = evt.data;
+      string eventName = obj["name"].str;
+      if(eventHandlerMap.ContainsKey(eventName)){
+        eventHandlerMap[eventName](obj["data"]);
+      }
     }
 
     private void OnConnect(SocketIOEvent evt)
@@ -84,6 +91,19 @@ namespace chuanhe
         OnDisconnectHandler(evt);
     }
 
+    public void OnEvent(string eventName, Action<JSONObject> callback){
+      // if(eventHandlerMap.ContainsKey(eventName))
+      eventHandlerMap[eventName] = callback;
+    }
+
+    public void EmitEvent(string eventName, JSONObject o){
+      if (!started) return;
+      JSONObject obj = new JSONObject();
+      obj["data"] = o;
+      obj["name"] = JSONObject.CreateStringObject(eventName);
+      this.socket.Emit("E", obj);
+    }
+
     public void On(string eventName, Action<SocketIOEvent> callback)
     {
       socket.On(eventName, callback);
@@ -110,7 +130,7 @@ namespace chuanhe
       this.socket.Emit(eventName, obj);
     }
 
-    public void EmitVector(string eventName, Vector3 v3)
+    public void Emit(string eventName, Vector3 v3)
     {
       this.Emit(eventName, v3.x + "," + v3.y + "," + v3.z);
     }
