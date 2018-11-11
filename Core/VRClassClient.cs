@@ -32,6 +32,8 @@ namespace chuanhe
 
     public JSONObject localConfig;
 
+    public Action OnApkUpdate;
+
 
     // public Tracker tracker;
 
@@ -57,6 +59,11 @@ namespace chuanhe
         socket.Init();
         if (OnReadyHandler != null)
           OnReadyHandler();
+      };
+      updater.OnApkUpdate = v =>
+      {
+        if (OnApkUpdate != null)
+          OnApkUpdate();
       };
       StartCoroutine(AppStart());
     }

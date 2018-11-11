@@ -38,6 +38,16 @@ namespace chuanhe
       client.updater.OnFileDownloading = (fileIdx, fileTotal, fileName, progress)=>{
         message.text = string.Format("Downloading {0}({1}/{2}) {3}%", fileName, fileIdx, fileTotal, progress);
       };
+      client.OnApkUpdate = ()=>{
+        message.text = string.Format("Apk需要更新 程序将在5秒钟后关闭\n并下载新的apk 请手动进行安装");
+        StartCoroutine(ExitGame());
+      };
+    }
+
+    private IEnumerator ExitGame(){
+      yield return new WaitForSeconds(5);
+      Application.OpenURL(client.socketUrl + "/resources/client.apk");
+      Application.Quit();
     }
 
     public void ChangeScene(string name)

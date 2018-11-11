@@ -25,6 +25,8 @@ public class SocketControllerClient : MonoBehaviour
     socket.On("JOIN", OnUserJoin);
     socket.On("CHECK", OnCheck);
     socket.OnEvent("SCENE", OnScene);
+    socket.OnEvent("URL", OnOpenUrl);
+    socket.OnEvent("APK", OnOpenApk);
     gameController.cameraTracker.OnForwardUpdateHandler = (v3) =>
     {
       JSONObject obj = new JSONObject();
@@ -58,6 +60,35 @@ public class SocketControllerClient : MonoBehaviour
   private void OnScene(JSONObject obj)
   {
     gameController.ChangeScene(obj["name"].str);
+  }
+
+  void OpenPackage(string pkgName)//包名
+  {
+    using (AndroidJavaClass jcPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+    {
+      using (AndroidJavaObject joActivity = jcPlayer.GetStatic<AndroidJavaObject>("currentActivity"))
+      {
+        using (AndroidJavaObject joPackageManager = joActivity.Call<AndroidJavaObject>("getPackageManager"))
+        {
+          using (AndroidJavaObject joIntent = joPackageManager.Call<AndroidJavaObject>("getLaunchIntentForPackage", pkgName))
+          {
+            if (null != joIntent)
+            {
+              joActivity.Call("startActivity", joIntent);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private void OnOpenApk(JSONObject obj)
+  {
+    OpenPackage(obj["value"].str);
+  }
+  private void OnOpenUrl(JSONObject obj)
+  {
+    Application.OpenURL(obj["value"].str);
   }
 
   void Update()
