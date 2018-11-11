@@ -23,6 +23,8 @@ namespace chuanhe
 
     public SocketControllerClient socket;
 
+    public ScoketVectorTracker cameraTracker;
+
     void Awake()
     {
       instant = this;

@@ -23,8 +23,15 @@ public class SocketControllerClient : MonoBehaviour
   public void Init()
   {
     socket.On("JOIN", OnUserJoin);
-    socket.On("SCENE", OnScene);
     socket.On("CHECK", OnCheck);
+    socket.OnEvent("SCENE", OnScene);
+    game.cameraTracker.OnForwardUpdateHandler = (v3) =>
+    {
+      JSONObject obj = new JSONObject();
+      obj["id"] = JSONObject.CreateStringObject(SystemInfo.deviceUniqueIdentifier);
+      obj["value"] = JSONObject.CreateStringObject(v3.x + "," + v3.y + "," + v3.z);
+      socket.EmitEvent("LOOKAT", obj);
+    };
   }
 
   private void ConnectToServer(SocketIOEvent evt = null)
@@ -48,9 +55,9 @@ public class SocketControllerClient : MonoBehaviour
     ConnectToServer();
   }
 
-  private void OnScene(SocketIOEvent evt)
+  private void OnScene(JSONObject obj)
   {
-    game.ChangeScene(evt.data["name"].str);
+    game.ChangeScene(obj["name"].str);
   }
 
   void Update()
