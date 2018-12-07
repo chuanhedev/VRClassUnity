@@ -45,8 +45,9 @@ namespace chuanhe
     }
 
     private IEnumerator ExitGame(){
-      yield return new WaitForSeconds(5);
-      Application.OpenURL(client.socketUrl + "/resources/client.apk");
+      yield return new WaitForSeconds(4);
+      Application.OpenURL(client.socketUrl + "/resources/student.apk");
+      yield return new WaitForSeconds(1);
       Application.Quit();
     }
 
