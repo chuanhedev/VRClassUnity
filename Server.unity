@@ -1232,8 +1232,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bebc09870fb5c604e9abd017c549a63f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  environment: 1
-  prodRemoteUrl: http://132.232.37.157/vrclass
+  environment: 0
+  prodRemoteUrl: http://www.iyoovr.com/vrclass
   devRemoteUrl: http://localhost/vrclass
   socketUrl: http://localhost:14332
 --- !u!4 &806950238
